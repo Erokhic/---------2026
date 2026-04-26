@@ -1,13 +1,14 @@
 import { useNavigate } from "react-router-dom"
 import { useState } from "react"
 
+
 export function RegForm({ addUser }) {
 
     const nav = useNavigate()
 
     const [formData, setFormData] = useState({
-        fio_user:'',
-        tel:'',
+        full_name:'',
+        phone:'',
         login :'',
         password:''
     })
@@ -19,12 +20,12 @@ const onChange= (e)=>{
 
 const onSubmit = (e)=>{
     e.preventDefault()
-    if (!formData.fio_user || !formData.tel || !formData.login || !formData.password) {
+    if (!formData.full_name || !formData.phone || !formData.login || !formData.password) {
         alert('Заполните все поля')
         return
     }
-     if(formData.tel.length < 11){
-        alert('Неправильно набран номер телефона')
+     if(formData.phone.length < 11){
+        alert('Неправильно набран номер телефона, телефон начинается с 8')
         return
     }
     if(formData.password.length < 6){
@@ -33,17 +34,17 @@ const onSubmit = (e)=>{
     }
     else{
         const newUser={
-        fio_user:formData.fio_user,
-        tel:formData.tel,
-        login :formData.login,
-        password:formData.password
+        full_name: formData.full_name,
+        phone: formData.phone,
+        login:formData.login,
+        password: formData.password
         }
 
         addUser(newUser)
-        alert(`${newUser.fio_user},вы успешно зарегистрировались!`)
+        alert(`${newUser.full_name},вы успешно зарегистрировались!`)
         setFormData({
-        fio_user:'',
-        tel:'',
+        full_name:'',
+        phone:'',
         login :'',
         password:''
         })
@@ -57,12 +58,13 @@ const onSubmit = (e)=>{
 
     return (
         <>
-            <form onSubmit={onSubmit}>
+        <div className="form-container">
+<form className="form" onSubmit={onSubmit}>
                 <h1>Регистрация</h1>
                 <span>ФИО пользователя</span><br/>
-                <input type="text" name="fio_user" onChange={onChange}/><br />
+                <input type="text" name="full_name" onChange={onChange}/><br />
                 <span>Номер телефона</span><br/>
-                <input type="number" name="tel" onChange={onChange}/><br />
+                <input type="tel" name="phone" onChange={onChange}/><br />
                 <span>Логин</span><br/>
                 <input type="text" name="login" onChange={onChange}/><br />
                 <span>Пароль</span><br/>
@@ -71,6 +73,8 @@ const onSubmit = (e)=>{
                 <button type="submit">Зарегистрировать</button>
                 <p onClick={()=> {nav('/auth')}}>войти</p>
             </form>
+        </div>
+            
         </>
     )
 }

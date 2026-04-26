@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 
-export function AuthForm() {
+export function AuthForm({getUser}) {
 
 const [formData, setFormData] = useState({
     login: '',
@@ -15,36 +15,48 @@ const onChange = (e)=>{
     setFormData({...formData, [name]: value})
 }
 
-const onSubmit=(e)=>{
-e.preventDefault()
 
-if(!formData.login || !formData.password){
-    alert('Заполните поля')
-    return
-}
 
-if(formData.login === 'beauty' && formData.password === 'pass'){
-    nav('/adminPanel')
-    return
-}else{
-    alert('неправильный логин или пароль')
-}
+const onSubmit = async(e) => {
+        e.preventDefault()
+        try {
+            const result = await getUser(formData) 
+            console.log(result)
+            if (result.length > 0) {
+                 const user = result[0]
+                onLogin(user) 
+                alert(`Добро пожаловать, ${user.full_name}!`)
+                navigate('/') 
+                return 
+            } else if(formData.login === 'beauty' && formData.password === 'pass'){
+                nav('/adminPanel')
+                return 
+            }else{
+                alert('Неверный логин или пароль')
+            }
+        } catch (error) {
+            alert('Ошибка при авторизации')
+        }
+      
+    }
 
-}
 
-    return (
+
+   return (
         <>
-            <form onSubmit={onSubmit}>
-                <h1>Вход</h1><br />
+        <div className="form-container">
+            <form  className="form" onSubmit={onSubmit}>
+
+                <h1>Вход</h1><br/>
                 <span>Логин</span><br/>
-                <input type="text" id="login" name="login" onChange={onChange}/><br/>
+                <input type="text" id="login" name="login" value={formData.login} onChange={onChange}/><br/>
                 <span>Пароль</span><br/>
-                <input type="password" id="password" name="password" onChange={onChange}/><br/>
+                <input type="password" id="password" name="password" value={formData.password} onChange={onChange}/><br/>
                 <button type="submit">Войти</button>
-                <p onClick={()=>{nav('/')}}>зарегистрироваться</p>
+                <p onClick={()=>{nav('/reg')}}>зарегистрироваться</p>
             </form>
-
-
+            </div>
         </>
     )
+
 }

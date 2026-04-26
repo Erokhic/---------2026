@@ -26,8 +26,9 @@ app.get("/masters", function (req, res) {
 
 
 app.post("/reg", function (req, res) {
-    const user = [req.body.login , req.body.password, req.body.full_name , req.body.phone]
-    const sql = "INSERT INTO user(login , password, full_name, phone)"
+    const defaultRoleId = 2;
+    const user = [defaultRoleId, req.body.full_name, req.body.phone, req.body.login , req.body.password]
+    const sql = "INSERT INTO user(id_role,full_name,phone,login, password) VALUES (?,?,?,?,?)" ;
     connection.query(sql, user, function (err, results) {
         if (err) {
             console.log(err);
