@@ -1,0 +1,108 @@
+import { useNavigate } from "react-router-dom"
+import { useState , useEffect } from "react"
+
+export function NewRequest() {
+    
+    // addRequest
+
+const nav = useNavigate()
+    const [request, setRequest]= useState([])
+ const [masters, setMasters]= useState([])
+ const [times, setTimes] = useState([])
+const [formData, setFormData]= useState({
+    id_user:'',
+    id_master: '',
+    booking_date:'',
+    booking_time:''
+})
+
+
+const onChange =(e)=>{
+    const {name, value}= e.target 
+    setFormData({...formData, [name]: value})
+}
+
+ useEffect(() => {
+        const fetchMasters = async () => {
+            try {
+                const response = await fetch('http://localhost:3000/masters')
+                const data = await response.json()
+                setMasters(data)
+            } catch (error) {
+                console.error('Ошибка:', error)
+            }
+}
+  fetchMasters()
+}, [])
+
+const onSubmit =  (e)=>{
+   e.preventDefault()
+
+    if(!formData.id_master){
+        alert('Выберите мастера')
+        return
+    }
+    if (!formData.booking_date) {
+            alert('Укажите дату')
+            return
+    }
+
+    if (!formData.booking_time) {
+           alert('Укажите время')
+            return
+    }
+
+const booking_datetime = `${formData.booking_date} ${formData.booking_time}:00`
+
+const requestData ={
+    id_user: parseInt(formData.id_user),
+    id_master: parseInt(formData.id_master),
+    id_status: 1,
+    booking_time: booking_datetime
+}
+
+
+
+
+
+nav('/requestions')
+}
+
+
+    return(
+        <>
+        <div className="form-container">
+<form className="form" onSubmit={onSubmit}>
+    <h1>Создать заявку</h1>
+<span>Выберите мастера</span>
+<select name="id_master" id="id_master" onChange={onChange}>
+    <option value="">-Выберите-</option>
+    {
+        masters.map(master=>(
+            <option key={master.id}>
+                {master.name}
+            </option>
+        ))
+    }
+</select>
+
+
+<span>Укажите дату</span>
+<input type="date" name="booking_date" value={formData.booking_date} onChange={onChange}/>
+
+<span>Выберите время (с 8:00 до 18:00)</span>
+<select type="datetime" name="booking_time" value={formData.booking_time} onChange={onChange}>
+
+<option value="">Выберите время</option>
+{times.map(time=>(
+    <option key ={time} value={time}>{time}</option>
+))}
+</select>
+    <button type="submit" >Отправить заявку</button>
+</form>
+        </div>
+        
+        
+        </>
+    )
+}

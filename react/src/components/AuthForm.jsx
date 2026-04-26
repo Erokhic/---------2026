@@ -23,10 +23,9 @@ const onSubmit = async(e) => {
             const result = await getUser(formData) 
             console.log(result)
             if (result.length > 0) {
-                 const user = result[0]
-                onLogin(user) 
+                const user = result[0] 
                 alert(`Добро пожаловать, ${user.full_name}!`)
-                navigate('/') 
+                nav('/requestions') 
                 return 
             } else if(formData.login === 'beauty' && formData.password === 'pass'){
                 nav('/adminPanel')
