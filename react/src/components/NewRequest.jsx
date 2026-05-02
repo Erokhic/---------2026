@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom"
 import { useState , useEffect } from "react"
+import { getMasters } from "../fetch/getMasters.js"
 
 export function NewRequest({addRequest}) {
     
@@ -14,6 +15,8 @@ const [formData, setFormData]= useState({
     booking_time:''
 })
 
+    const user = JSON.parse(localStorage.getItem('user') || '{}')
+    const userId = user.id
 
 const generateTimeSlots =()=>{
     const slots = []
@@ -44,15 +47,14 @@ setAvailableTimes(times)
 
 
  useEffect(() => {
-        const fetchMasters = async () => {
-            try {
-                const response = await fetch('http://localhost:3000/masters')
-                const data = await response.json()
-                setMasters(data)
-            } catch (error) {
-                console.error('Ошибка:', error)
-            }
-}
+       const fetchMasters = async ()=>{
+        try{
+            const data = await getMasters()
+            setMasters(data)
+        }catch (error){
+console.error('Ошибка:', error)
+        }
+       }
   fetchMasters()
 }, [])
 
@@ -61,9 +63,14 @@ const onChange =(e)=>{
     setFormData({...formData, [name]: value})
 }
 
-const onSubmit =  (e)=>{
+const onSubmit = async (e)=>{
    e.preventDefault()
 
+        if (!userId) {
+            alert('Ошибка: пользователь не авторизован')
+            nav('/auth')
+            return
+        }
     if(!formData.id_master){
         alert('Выберите мастера')
         return
@@ -81,10 +88,10 @@ const onSubmit =  (e)=>{
 const booking_datetime = `${formData.booking_date} ${formData.booking_time}:00`
 
 const requestData ={
-    id_user: parseInt(formData.id_user),
+    id_user: parseInt(userId),
     id_master: parseInt(formData.id_master),
     id_status: 1,
-    booking_time: booking_datetime
+    booking_datetime: booking_datetime
 }
  console.log('Отправляемые данные:', requestData)
 addRequest(requestData)
@@ -99,11 +106,11 @@ nav('/requestions')
 <form className="form" onSubmit={onSubmit}>
     <h1>Создать заявку</h1>
 <span>Выберите мастера</span>
-<select name="id_master" id="id_master" onChange={onChange}>
+<select name="id_master" id="id_master" value={formData.id_master} onChange={onChange}>
     <option value="">-Выберите-</option>
     {
         masters.map(master=>(
-            <option key={master.id}>
+            <option key={master.id} value={master.id}>
                 {master.name}
             </option>
         ))

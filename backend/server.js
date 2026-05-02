@@ -55,7 +55,7 @@ app.post("/auth", function (req, res) {
 })
 
 
-app.get("/request", function (req, res) {
+app.get("/requests", function (req, res) {
     connection.query("SELECT * FROM request", function (err, results) {
         if (err) {
             console.log(err);
@@ -69,7 +69,7 @@ app.get("/request", function (req, res) {
 
 
 app.get("/request/:id", function (req, res) {
-    const userID = [res.body.id_user]
+    const userID = [req.body.id_user]
     connection.query("SELECT * FROM user WHERE id_user =?", [userID] , function (err, results) {
         if (err) {
             console.log(err);
@@ -82,9 +82,10 @@ app.get("/request/:id", function (req, res) {
 })
 
 app.post('/newRequest' , (req, res)=>{
-    const requestFormData = [res.body.id_user,res.body.id_master,res.body.id_status,res.body.booking_datetime]
-    const sql = 'INSERT INTO request (id_user,id_master,id_status,booking_datetime ) VALUES (?, ? ,?, ?)'
-     connection.query(sql, requestFormData, function (err, results) {
+      const { id_user, id_master, id_status, booking_datetime } = req.body  
+    const sql = 'INSERT INTO request (id_user,id_master,id_status,booking_datetime) VALUES (?, ? ,?, ?)'
+     const values = [id_user, id_master, id_status, booking_datetime]
+     connection.query(sql, values, function (err, results) {
         if (err) {
             console.log(err);
         } else {

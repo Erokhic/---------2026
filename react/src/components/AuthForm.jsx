@@ -1,7 +1,8 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { getUser } from "../fetch/getUser.js"
 
-export function AuthForm({getUser}) {
+export function AuthForm() {
 
 const [formData, setFormData] = useState({
     login: '',
@@ -17,17 +18,31 @@ const onChange = (e)=>{
 
 
 
-const onSubmit = async(e) => {
+const onSubmit = async (e) => {
         e.preventDefault()
         try {
             const result = await getUser(formData) 
             console.log(result)
             if (result.length > 0) {
                 const user = result[0] 
+              const userData ={
+                 id: user.id,
+                role: user.id_role,
+                login: user.login,
+                password: user.password,
+                full_name: user.full_name,
+                phone: user.phone
+              }
+localStorage.setItem('user', JSON.stringify(userData))
+    localStorage.setItem('userId', user.id)
+
                 alert(`Добро пожаловать, ${user.full_name}!`)
                 nav('/requestions') 
                 return 
             } else if(formData.login === 'beauty' && formData.password === 'pass'){
+                localStorage.setItem('userId', 'admin')
+                localStorage.setItem('userName', 'Администратор')
+                localStorage.setItem('userRole', 'admin')
                 nav('/adminPanel')
                 return 
             }else{
@@ -52,7 +67,7 @@ const onSubmit = async(e) => {
                 <span>Пароль</span><br/>
                 <input type="password" id="password" name="password" value={formData.password} onChange={onChange}/><br/>
                 <button type="submit">Войти</button>
-                <p onClick={()=>{nav('/reg')}}>зарегистрироваться</p>
+                <p onClick={()=>{nav('/')}}>зарегистрироваться</p>
             </form>
             </div>
         </>
