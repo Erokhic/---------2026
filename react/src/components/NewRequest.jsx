@@ -1,14 +1,12 @@
 import { useNavigate } from "react-router-dom"
 import { useState , useEffect } from "react"
 
-export function NewRequest() {
+export function NewRequest({addRequest}) {
     
-    // addRequest
 
 const nav = useNavigate()
-    const [request, setRequest]= useState([])
  const [masters, setMasters]= useState([])
- const [times, setTimes] = useState([])
+ const [availableTimes, setAvailableTimes] = useState([])
 const [formData, setFormData]= useState({
     id_user:'',
     id_master: '',
@@ -17,10 +15,33 @@ const [formData, setFormData]= useState({
 })
 
 
-const onChange =(e)=>{
-    const {name, value}= e.target 
-    setFormData({...formData, [name]: value})
+const generateTimeSlots =()=>{
+    const slots = []
+    for (let hour = 8; hour <= 18; hour++) {
+        slots.push(`${hour.toString().padStart(2,'0')}:00`)
+    }
+    return slots
 }
+
+useEffect(() =>{
+if(formData.booking_date){
+let times = generateTimeSlots()
+
+const today = new Date().toDateString().split('T')[0]
+if (formData.booking_date === today) {
+    const currentHour = new Date().getHours()
+    times = times.filter(time=>{
+        const hour = parseInt(time.split(':')[0])
+        return hour> currentHour
+    })
+}
+setAvailableTimes(times)
+    setFormData(prev =>({...prev, booking_time: ''}))
+}
+ 
+},[formData.booking_date])
+
+
 
  useEffect(() => {
         const fetchMasters = async () => {
@@ -34,6 +55,11 @@ const onChange =(e)=>{
 }
   fetchMasters()
 }, [])
+
+const onChange =(e)=>{
+    const {name, value}= e.target 
+    setFormData({...formData, [name]: value})
+}
 
 const onSubmit =  (e)=>{
    e.preventDefault()
@@ -60,11 +86,9 @@ const requestData ={
     id_status: 1,
     booking_time: booking_datetime
 }
-
-
-
-
-
+ console.log('Отправляемые данные:', requestData)
+addRequest(requestData)
+alert('Ваша заявка отправлена!')
 nav('/requestions')
 }
 
@@ -94,11 +118,11 @@ nav('/requestions')
 <select type="datetime" name="booking_time" value={formData.booking_time} onChange={onChange}>
 
 <option value="">Выберите время</option>
-{times.map(time=>(
+{availableTimes.map(time=>(
     <option key ={time} value={time}>{time}</option>
 ))}
 </select>
-    <button type="submit" >Отправить заявку</button>
+    <button type="submit">Отправить заявку</button>
 </form>
         </div>
         

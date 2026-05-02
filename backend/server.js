@@ -81,7 +81,18 @@ app.get("/request/:id", function (req, res) {
     })
 })
 
-
+app.post('/newRequest' , (req, res)=>{
+    const requestFormData = [res.body.id_user,res.body.id_master,res.body.id_status,res.body.booking_datetime]
+    const sql = 'INSERT INTO request (id_user,id_master,id_status,booking_datetime ) VALUES (?, ? ,?, ?)'
+     connection.query(sql, requestFormData, function (err, results) {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log(results);
+            res.json(results)
+        }
+})
+})
 
 
 
