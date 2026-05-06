@@ -68,9 +68,9 @@ app.get("/requests", function (req, res) {
 })
 
 
-app.get("/request/:id", function (req, res) {
-    const userID = [req.body.id_user]
-    connection.query("SELECT * FROM user WHERE id_user =?", [userID] , function (err, results) {
+app.get("/requests/:userId", function (req, res) {
+    const userId = req.params.userId
+    connection.query("SELECT * FROM request WHERE id_user =?", [userId] , function (err, results) {
         if (err) {
             console.log(err);
 
@@ -93,6 +93,19 @@ app.post('/newRequest' , (req, res)=>{
             res.json(results)
         }
 })
+})
+
+
+app.get("/statuses", function (req, res) {
+    connection.query("SELECT * FROM status", function (err, results) {
+        if (err) {
+            console.log(err);
+
+        } else {
+            console.log(results);
+            res.json(results)
+        }
+    })
 })
 
 

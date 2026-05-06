@@ -13,7 +13,6 @@ import { pushRequest } from './fetch/pushRequest.js'
 function App() {
 
   const [users, setUsers] = useState([])
-  const [requests, setRequests] = useState([])
  
 
   const addUser = (newUser) => {
@@ -27,7 +26,6 @@ function App() {
       ...requestData,
       userId: currentUser?.id
     }
-    setRequests([...requests, newRequest])
     try {
       await pushRequest(requestData)
       return true
@@ -45,7 +43,7 @@ function App() {
         <Route path="/auth" element={<AuthForm />} />
         <Route path="/adminPanel" element={<AdminPanel />} />
         <Route path="/newRequest" element={<NewRequest addRequest={addRequest} />} />
-        <Route path="/requestions" element={<PageRequestions requests={requests} />} />
+        <Route path="/requestions" element={<PageRequestions />} />
       </Routes>
     </>
   )
