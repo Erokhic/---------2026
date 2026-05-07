@@ -110,4 +110,20 @@ app.get("/statuses", function (req, res) {
 
 
 
+app.get("/allRequests", function (req, res) {
+    connection.query('SELECT user.full_name, user.phone, request.booking_datetime,master.name AS master_name, status.name AS status FROM request  JOIN user ON request.id_user = user.id JOIN master ON request.id_master = master.id JOIN status ON request.id_status = status.id ORDER BY status.name, request.booking_datetime DESC;', function (err, results) {
+        if (err) {
+            console.log(err);
+
+        } else {
+            console.log(results);
+            res.json(results)
+        }
+    })
+})
+
+
+
+
+
 app.listen(3000, function () { console.log("Сервер запущен по адресу http://localhost:3000") });
