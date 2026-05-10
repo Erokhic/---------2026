@@ -23,31 +23,20 @@ export function AdminPanel() {
         nav('/auth')
     }
 
-    useEffect(() => {
-        const loadData = async () => {
-            const requestData = await getRequests()
-            setRequests(requestData)
-
-            const statusData = await getStatuses()
-            setStatuses(statusData)
-        }
-
-        loadData()
-    }, [])
  const getStatusName = (statusId) => {
         if (!statusId) return 'Неизвестно'
         const status = statuses.find(s => s.id === Number(statusId))
     return status?.name || 'Неизвестно'
 }
 
-
-const updateRequestStatus = (requestId, newStatusId) => {
+const updateRequestStatus =  async (requestId, newStatusId) => {
+     const statusId = Number(newStatusId)
     const newStatusName = getStatusName(newStatusId)
   const updatedRequests = requests.map(request => {
     if (request.id === requestId) {
       return {
         ...request,     
-        id_ststus: newStatusId,      
+        id_status: newStatusId,      
         status: newStatusName   
       };
     }
@@ -55,8 +44,33 @@ const updateRequestStatus = (requestId, newStatusId) => {
   });
   
   setRequests(updatedRequests);
-}
+try {
+            const response = await fetch(`http://localhost:3000/api/requests/${requestId}/status`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id_status: Number(newStatusId) })
+            })
+            
+            if (response.ok) {
+                console.log('Статус сохранен в базе данных')
+            }
+        } catch (error) {
+            console.error('Ошибка:', error)
+            alert('Не удалось сохранить статус')
+            const requestData = await getRequests()
+            setRequests(requestData)
+        }
+    }
 
+    useEffect(() => {
+        const loadData = async () => {
+            const requestsData = await getRequests()
+            setRequests(requestsData)
+            const statusData = await getStatuses()
+            setStatuses(statusData)
+        }
+        loadData()
+    }, [])
 
 
     return (
@@ -77,7 +91,7 @@ const updateRequestStatus = (requestId, newStatusId) => {
                         <tr key={index}>
                             <td>{request.full_name}</td>
                             <td>{request.phone}</td>
-                            <td>{request.booking_datetime}</td>
+                            <td>{new Date(request.booking_datetime).toLocaleString()}</td>
                             <td>{request.master_name}</td>
                             <td>
                                 <select value={request.id_status} onChange={(e)=> updateRequestStatus(request.id, e.target.value)}>

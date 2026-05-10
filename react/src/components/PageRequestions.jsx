@@ -33,6 +33,8 @@ export function PageRequestions() {
         }
 
         loadData()
+
+        // const interval = setInterval(requestData, 30000)
     }, [])
 
     const getMasterName = (masterId) => {
@@ -64,7 +66,7 @@ export function PageRequestions() {
                 <button onClick={() => { nav('/newRequest') }}>Добавить новую заявку</button>
                 {requests.map((request, index) => (
                     <div key={request.id || index}>
-                        <p><b>Мастер:</b> {getMasterName(request.id_master)}<b>Время:</b> {request.booking_datetime} <b>Статус:</b> {getStatusName(request.id_status)}</p>
+                        <p><b>Мастер:</b> {getMasterName(request.id_master)}<b>Время:</b> {new Date(request.booking_datetime).toLocaleString()} <b>Статус:</b> {getStatusName(request.id_status)}</p>
                     </div>
 
                 ))}

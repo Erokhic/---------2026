@@ -111,7 +111,7 @@ app.get("/statuses", function (req, res) {
 
 
 app.get("/allRequests", function (req, res) {
-    connection.query('SELECT user.full_name, user.phone, request.booking_datetime,master.name AS master_name, status.name AS status FROM request  JOIN user ON request.id_user = user.id JOIN master ON request.id_master = master.id JOIN status ON request.id_status = status.id ORDER BY status.name, request.booking_datetime DESC;', function (err, results) {
+    connection.query('SELECT request.id ,request.id_status, user.full_name, user.phone, request.booking_datetime,master.name AS master_name, status.name AS status FROM request  JOIN user ON request.id_user = user.id JOIN master ON request.id_master = master.id JOIN status ON request.id_status = status.id ORDER BY status.name, request.booking_datetime DESC;', function (err, results) {
         if (err) {
             console.log(err);
 
@@ -123,7 +123,19 @@ app.get("/allRequests", function (req, res) {
 })
 
 
-
+app.put('/api/requests/:id/status', async (req, res) => {
+    const requestId = req.params.id
+    const { id_status } = req.body
+    
+    try {
+        const query = 'UPDATE request SET id_status = ? WHERE id = ?'
+        await connection.query(query, [id_status, requestId])
+        
+        res.json({ success: true })
+    } catch (err) {
+         console.log(err);
+    }
+})
 
 
 app.listen(3000, function () { console.log("Сервер запущен по адресу http://localhost:3000") });
