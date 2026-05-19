@@ -10,14 +10,6 @@ export function AdminPanel() {
     const [requests, setRequests] = useState([])
     const [statuses , setStatuses] = useState([])
 
-    const currentUser =JSON.parse(localStorage.getItem('user')) 
-
-//   if (!currentUser || currentUser.login !== 'beauty') {
-//     alert('Доступ запрещен');
-//     nav('/auth');
-//     return
-//   }
-
     const handleLogout = () => {
        localStorage.removeItem('user')
         nav('/auth')

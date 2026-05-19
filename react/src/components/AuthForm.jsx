@@ -18,41 +18,64 @@ const onChange = (e)=>{
 
 
 
-const onSubmit = async (e) => {
-        e.preventDefault()
-        try {
-            const result = await getUser(formData) 
-            console.log(result)
-            if (result.length > 0) {
-                const user = result[0] 
-              const userData ={
-                 id: user.id,
-                role: user.id_role,
-                login: user.login,
-                password: user.password,
-                full_name: user.full_name,
-                phone: user.phone
-              }
-localStorage.setItem('user', JSON.stringify(userData))
-    localStorage.setItem('userId', user.id)
 
-                alert(`Добро пожаловать, ${user.full_name}!`)
-                nav('/requestions') 
-                return 
-            } else if(formData.login === 'beauty' && formData.password === 'pass'){
-                localStorage.setItem('userId', 'admin')
-                localStorage.setItem('userName', 'Администратор')
-                localStorage.setItem('userRole', 'admin')
-                nav('/adminPanel')
-                return 
-            }else{
-                alert('Неверный логин или пароль')
-            }
-        } catch (error) {
-            alert('Ошибка при авторизации')
+
+
+const onSubmit = async (e) => {
+    e.preventDefault()
+    try {
+           const isBazeAdmin = formData.login === 'beauty' && formData.password === 'pass'
+        
+        if (isBazeAdmin) {
+            localStorage.setItem('userId', 'admin')
+            localStorage.setItem('userName', 'Администратор')
+            localStorage.setItem('userRole', 'admin')
+            alert('Добро пожаловать, Администратор!')
+            nav('/adminPanel')
+            return
         }
-      
+        const result = await getUser(formData)
+        if (result.length === 0) {
+            alert('Неверный логин или пароль')
+            return
+        }
+
+        const user = result[0]
+        const isAdmin = user.id_role === 2
+     
+        const userData = {
+            id: user.id,
+            role: user.id_role,
+            login: user.login,
+            full_name: user.full_name,
+            phone: user.phone
+        }
+
+        if (!isAdmin) userData.password = user.password
+        
+        localStorage.setItem('user', JSON.stringify(userData))
+        localStorage.setItem('userId', user.id)
+        
+        if (isAdmin) {
+            localStorage.setItem('userRole', 'admin')
+            localStorage.setItem('userName', user.full_name)
+            alert(`Добро пожаловать, администратор ${user.full_name}!`)
+            nav('/adminPanel')
+        } else {
+            alert(`Добро пожаловать, ${user.full_name}!`)
+            nav('/requestions')
+        }
+    } catch (error) {
+        alert('Ошибка при авторизации')
     }
+}
+
+
+
+
+
+
+
 
 
 
